@@ -1,4 +1,4 @@
-rm marathon.json
+rm -f marathon.json
 tee marathon.json &> /dev/null << EOF
 {
   "id": "/test",
@@ -20,4 +20,4 @@ tee marathon.json &> /dev/null << EOF
 
 EOF
 
-echo marathon.json
+cat marathon.json
