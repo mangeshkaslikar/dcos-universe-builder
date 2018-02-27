@@ -157,18 +157,9 @@ RUN /usr/local/bin/install-plugins.sh       \
 # disable first-run wizard
 RUN echo 2.0 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state
 
-
-RUN cd /
-
-# Make sure u add your own .pem file 
-
+# Make sure u add your own .pem file
 COPY dcos.pem /tmp
-#RUN cd $JENKINS_HOME && mkdir keystore && cd keystore
-
-RUN cp ${JAVA_HOME}/jre/lib/security/cacerts /
-RUN pwd
-RUN ${JAVA_HOME}/bin/keytool -keystore cacerts -import -alias dcos -file /tmp/dcos.pem -storepass <storepwd> -noprompt
-
+RUN ${JAVA_HOME}/bin/keytool -keystore ${JAVA_HOME}/jre/lib/security/cacerts -import -alias dcos -file /tmp/dcos.pem -storepass changeit -noprompt
 
 CMD export LD_LIBRARY_PATH=/libmesos-bundle/lib:/libmesos-bundle/lib/mesos:$LD_LIBRARY_PATH \
   && export MESOS_NATIVE_JAVA_LIBRARY=$(ls /libmesos-bundle/lib/libmesos-*.so)   \
@@ -180,8 +171,6 @@ CMD export LD_LIBRARY_PATH=/libmesos-bundle/lib:/libmesos-bundle/lib/mesos:$LD_L
      -Djava.awt.headless=true                        \
      -Dhudson.DNSMultiCast.disabled=true             \
      -Djenkins.install.runSetupWizard=false          \
-     -Djavax.net.ssl.trustStore=cacerts \
-     -Djavax.net.ssl.trustStorePassword=<storepwd> \
      -jar ${JENKINS_FOLDER}/jenkins.war            \
      ${JENKINS_OPTS}                                 \
      --httpPort=${PORT1}                             \
@@ -190,4 +179,3 @@ CMD export LD_LIBRARY_PATH=/libmesos-bundle/lib:/libmesos-bundle/lib/mesos:$LD_L
      --httpListenAddress=127.0.0.1                   \
      --ajp13ListenAddress=127.0.0.1                  \
      --prefix=${JENKINS_CONTEXT}
-
